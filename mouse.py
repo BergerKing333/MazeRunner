@@ -28,6 +28,38 @@ class mouse:
             current = cameFrom[current]
             total_path.prepend(current)
         return total_path
+    
+    def costmapAstar(self):
+        start = self.grid.start
+        openSet = []
+        heappush(openSet, (0, start))
+
+        cameFrom = {}
+        cameFrom[start] = None
+        g_score = {start: 0}
+        visited = []
+        while openSet:
+            current_cost, current_node = heappop(openSet)
+            if self.animate:
+                visited.append(current_node)
+                self.drawVisited(visited)
+                # self.grid.drawAll()
+            if current_node == self.grid.end:
+                path = []
+                while current_node:
+                    path.append(current_node)
+                    current_node = cameFrom[current_node]
+                print(f"Squares checked: {len(visited)}")
+                return path[::-1], visited
+        
+            for neighbor in self.grid.getNeighbors(current_node):
+                tentative_g_score = g_score[current_node] + 1
+                if neighbor not in g_score or tentative_g_score < g_score[neighbor]:
+                    g_score[neighbor] = tentative_g_score
+                    f_score = tentative_g_score + self.grid.getHeuristic(neighbor)
+                    heappush(openSet, (f_score, neighbor))
+                    cameFrom[neighbor] = current_node
+        return None, visited
 
     def A_star(self):
         start = self.grid.start
@@ -43,7 +75,7 @@ class mouse:
             if self.animate:
                 visited.append(current_node)
                 self.drawVisited(visited)
-                self.grid.drawAll()
+                # self.grid.drawAll()
             if current_node == self.grid.end:
                 path = []
                 while current_node:

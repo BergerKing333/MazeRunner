@@ -1,13 +1,15 @@
 import numpy as np
 import pygame
 from mouse import mouse
+import noise
+import matplotlib.pyplot as plt
 
 class grid:
-    def __init__(self, width=20, height=20, resolution=(1000, 1000), borderThickness=2):
+    def __init__(self, width=20, height=20, resolution=(1000, 1000), borderThickness=0):
         # self.grid = np.zeros((width, height))
         self.start = None
         self.end = None
-        self.grid = np.random.choice([0, 1], size=(width, height, 2), p=[0.7, 0.3])
+        # self.grid = np.random.choice([0, 1], size=(width, height, 2), p=[0.7, 0.3])
         self.width = width
         self.height = height
         self.resolution = resolution
@@ -17,6 +19,27 @@ class grid:
         assert resolution[0] == resolution[1], "The resolution must be a square"
 
         self.squareSize = self.resolution[0] // self.width - borderThickness
+
+        shape = (width, height)
+
+        self.grid = np.zeros((width, height, 2))
+        scale = 25
+        octaves = 1
+        persistence = 500
+        lacunarity = 2.0
+
+        # Generate Perlin noise
+        for i in range(width):
+            for j in range(height):
+                self.grid[i][j][0] = (noise.pnoise2(i / scale, 
+                                          j / scale, 
+                                          octaves=octaves, 
+                                          persistence=persistence, 
+                                          lacunarity=lacunarity) + 1) / 2
+        
+        plt.imshow(self.grid[:, :, 0], cmap='gray')
+        plt.colorbar()
+        plt.show()
 
     def setStart(self, x, y):
         if self.start != None:
@@ -78,10 +101,8 @@ class grid:
 
     def getSquareColor(self, x, y):
         val = self.grid[x, y, 0]
-        if val == 0:
-            return (255, 255, 255)
-        elif val == 1:
-            return (0, 0, 0)
+        if val < 1:
+            return (int((val * 255)), int((val * 255)), int((val * 255)))
         elif val == 2:
             return (0, 255, 0)
         elif val == 3:

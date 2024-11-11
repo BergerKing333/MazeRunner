@@ -12,7 +12,7 @@ class main:
 
     running = True
 
-    grid = grid(20, 20, screen.get_size())
+    grid = grid(600, 600, screen.get_size())
 
     mouse = mouse(grid, animate=True)
     path = []
