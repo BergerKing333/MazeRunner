@@ -3,6 +3,7 @@ import pygame
 from mouse import mouse
 import noise
 import matplotlib.pyplot as plt
+import random
 
 class grid:
     def __init__(self, width=20, height=20, resolution=(1000, 1000), borderThickness=0):
@@ -28,14 +29,17 @@ class grid:
         persistence = 500
         lacunarity = 2.0
 
+        base = random.randint(0, 1000)
+
         # Generate Perlin noise
         for i in range(width):
             for j in range(height):
                 self.grid[i][j][0] = (noise.pnoise2(i / scale, 
                                           j / scale, 
-                                          octaves=octaves, 
+                                          octaves=octaves,
+                                          base=base,
                                           persistence=persistence, 
-                                          lacunarity=lacunarity) + 1) / 2
+                                          lacunarity=lacunarity) + 1)
         
         plt.imshow(self.grid[:, :, 0], cmap='gray')
         plt.colorbar()
@@ -85,24 +89,26 @@ class grid:
         self.draw(self.screen)
         pygame.display.flip()
 
+    def getCost(self, coords):
+        return self.grid[coords[0], coords[1], 0]
 
     def getNeighbors(self, coords):
         x, y = coords
         neighbors = []
         if x > 0 and self.grid[x-1, y, 0] != 1:
-            neighbors.append((x-1, y))
+            neighbors.append(((x-1, y), 1))
         if x < self.width - 1 and self.grid[x+1, y, 0] != 1:
-            neighbors.append((x+1, y))
+            neighbors.append(((x+1, y), 1))
         if y > 0 and self.grid[x, y-1, 0] != 1:
-            neighbors.append((x, y-1))
+            neighbors.append(((x, y-1), 1))
         if y < self.height - 1 and self.grid[x, y+1, 0] != 1:
-            neighbors.append((x, y+1))
+            neighbors.append(((x, y+1), 1))
         return neighbors
 
     def getSquareColor(self, x, y):
         val = self.grid[x, y, 0]
-        if val < 1:
-            return (int((val * 255)), int((val * 255)), int((val * 255)))
+        if val <= 2:
+            return (int((val * 127)), int((val * 127)), int((val * 127)))
         elif val == 2:
             return (0, 255, 0)
         elif val == 3:
