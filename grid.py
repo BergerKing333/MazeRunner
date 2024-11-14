@@ -24,7 +24,7 @@ class grid:
         shape = (width, height)
 
         self.grid = np.zeros((width, height, 2))
-        scale = 25
+        scale = 100
         octaves = 1
         persistence = 500
         lacunarity = 2.0
@@ -39,7 +39,7 @@ class grid:
                                           octaves=octaves,
                                           base=base,
                                           persistence=persistence, 
-                                          lacunarity=lacunarity) + 1)
+                                          lacunarity=lacunarity) + 1) ** 2
         
         plt.imshow(self.grid[:, :, 0], cmap='gray')
         plt.colorbar()
@@ -95,13 +95,13 @@ class grid:
     def getNeighbors(self, coords):
         x, y = coords
         neighbors = []
-        if x > 0 and self.grid[x-1, y, 0] != 1:
+        if x > 0 and self.grid[x-1, y, 0] > 0:
             neighbors.append(((x-1, y), 1))
-        if x < self.width - 1 and self.grid[x+1, y, 0] != 1:
+        if x < self.width - 1 and self.grid[x+1, y, 0] > 0:
             neighbors.append(((x+1, y), 1))
-        if y > 0 and self.grid[x, y-1, 0] != 1:
+        if y > 0 and self.grid[x, y-1, 0] > 0:
             neighbors.append(((x, y-1), 1))
-        if y < self.height - 1 and self.grid[x, y+1, 0] != 1:
+        if y < self.height - 1 and self.grid[x, y+1, 0] > 0:
             neighbors.append(((x, y+1), 1))
         return neighbors
 

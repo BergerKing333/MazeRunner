@@ -18,6 +18,8 @@ class mouse:
             path = self.depth_first_search()
         elif pathType == "costmapAstar":
             path = self.costmapAstar()
+        elif pathType == "costmapAstar2":
+            path = self.costmapAstar2()
         if path == None:
             print("No path found")
             return None
@@ -58,7 +60,7 @@ class mouse:
                 tentative_g_score = g_score[current_node] + score
                 if neighbor not in g_score or tentative_g_score < g_score[neighbor]:
                     g_score[neighbor] = tentative_g_score
-                    f_score = (tentative_g_score + self.grid.getHeuristic(neighbor)) * (25 * (2 - self.grid.getCost(neighbor)))
+                    f_score = (tentative_g_score + self.grid.getHeuristic(neighbor) / 10) * (25 * (2 - self.grid.getCost(neighbor)))
                     heappush(openSet, (f_score, neighbor))
                     cameFrom[neighbor] = current_node
         return None, visited
@@ -86,11 +88,11 @@ class mouse:
                 print(f"Squares checked: {len(visited)}")
                 return path[::-1], visited
         
-            for neighbor in self.grid.getNeighbors(current_node):
-                tentative_g_score = g_score[current_node] + 1
+            for neighbor, score in self.grid.getNeighbors(current_node):
+                tentative_g_score = g_score[current_node] + score
                 if neighbor not in g_score or tentative_g_score < g_score[neighbor]:
                     g_score[neighbor] = tentative_g_score
-                    f_score = (tentative_g_score + self.grid.getHeuristic(neighbor)) + (25 * (1 - self.grid.getCost(neighbor)))
+                    f_score = (tentative_g_score + self.grid.getHeuristic(neighbor) / 10) + (1000 * (2 - self.grid.getCost(neighbor)))
                     heappush(openSet, (f_score, neighbor))
                     cameFrom[neighbor] = current_node
         return None, visited

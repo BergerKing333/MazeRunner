@@ -12,7 +12,7 @@ class main:
 
     running = True
 
-    grid = grid(100, 100, screen.get_size())
+    grid = grid(600, 600, screen.get_size())
 
     mouse = mouse(grid, animate=True)
     path = []
@@ -35,7 +35,7 @@ class main:
                     x, y = pygame.mouse.get_pos()
                     grid.setEnd(x, y)
                     if grid.start != None:
-                        path, visited = mouse.start(pathType="costmapAstar")
+                        path, visited = mouse.start(pathType="costmapAstar2")
                         # mouse.drawVisited(visited)
                         mouse.drawPath(path)
                     # path = mouse.start()
