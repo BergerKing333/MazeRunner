@@ -7,7 +7,7 @@ import csv
 # path length, average cost, max cost, squares checked, time to calculate path
 # return len(path), self.getAveragePathCost(path), self.getMaxPathCost(path), len(visited), round(time.time() - startTime, 5)
 def bigTest(n):
-    types = ["basicAddition", "noCostImplementation", "multiplication", "exponent"]
+    types = ["basicAddition", "multiplication", "exponent", "noCostImplementation"]
     seeds_x = np.random.randint(0, 1000, n)
     seeds_y = np.random.randint(0, 1000, n)
     start_coords = np.random.randint(0, 1300, (n, 2))

@@ -37,12 +37,13 @@ class mouse:
         total = 0
         for node in path:
             total += self.grid.getCost(node)
-        return total / len(path)
+        return 2 - (total / len(path))
     
     def getMaxPathCost(self, path):
-        maxCost = 0
+        maxCost = 10
         for node in path:
-            maxCost = max(maxCost, self.grid.getCost(node))
+            # accommodating for everything being 2 - cost
+            maxCost = min(maxCost, self.grid.getCost(node))
         return maxCost
     
     def noCostImplementation(self):
@@ -67,7 +68,7 @@ class mouse:
                 return path[::-1], visited
             for neighbor, score in self.grid.getNeighbors(current_node):
                 tentative_g_score = g_score[current_node] + score
-                if neighbor not in g_score or tentative_g_score < g_score[neighbor]:
+                if neighbor not in g_score:
                     g_score[neighbor] = tentative_g_score
                     f_score = tentative_g_score + self.grid.getHeuristic(neighbor)
                     heappush(openSet, (f_score, neighbor))
@@ -97,7 +98,7 @@ class mouse:
         
             for neighbor, score in self.grid.getNeighbors(current_node):
                 tentative_g_score = g_score[current_node] + score
-                if neighbor not in g_score or tentative_g_score < g_score[neighbor]:
+                if neighbor not in g_score:
                     g_score[neighbor] = tentative_g_score
                     f_score = tentative_g_score + self.grid.getHeuristic(neighbor) + (1 / (self.grid.getCost(neighbor) + 1))
                     heappush(openSet, (f_score, neighbor))
@@ -125,7 +126,7 @@ class mouse:
         
             for neighbor, score in self.grid.getNeighbors(current_node):
                 tentative_g_score = g_score[current_node] + score
-                if neighbor not in g_score or tentative_g_score < g_score[neighbor]:
+                if neighbor not in g_score:
                     g_score[neighbor] = tentative_g_score
                     f_score = (tentative_g_score + self.grid.getHeuristic(neighbor)) * ((2 - self.grid.getCost(neighbor)))
                     heappush(openSet, (f_score, neighbor))
@@ -153,7 +154,7 @@ class mouse:
         
             for neighbor, score in self.grid.getNeighbors(current_node):
                 tentative_g_score = g_score[current_node] + score
-                if neighbor not in g_score or tentative_g_score < g_score[neighbor]:
+                if neighbor not in g_score:
                     g_score[neighbor] = tentative_g_score
                     f_score = (tentative_g_score + self.grid.getHeuristic(neighbor)) ** (2 - self.grid.getCost(neighbor))
                     heappush(openSet, (f_score, neighbor))
