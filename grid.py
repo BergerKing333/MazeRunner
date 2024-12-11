@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import random
 
 class grid:
-    def __init__(self, width=20, height=20, resolution=(1000, 1000), borderThickness=0):
+    def __init__(self, width=20, height=20, resolution=(1000, 1000), borderThickness=0, seed_x = 0, seed_y = 0):
         # self.grid = np.zeros((width, height))
         self.start = None
         self.end = None
@@ -26,24 +26,21 @@ class grid:
         self.grid = np.zeros((width, height, 2))
         scale = 100
         octaves = 1
-        persistence = 500
+        persistence = 1
         lacunarity = 2.0
 
-        base = random.randint(0, 1000)
-
-        # Generate Perlin noise
         for i in range(width):
             for j in range(height):
-                self.grid[i][j][0] = (noise.pnoise2(i / scale, 
-                                          j / scale, 
+                self.grid[i][j][0] = (noise.pnoise2((i + seed_x) / scale, 
+                                          (j + seed_y) / scale, 
                                           octaves=octaves,
-                                          base=base,
+
                                           persistence=persistence, 
-                                          lacunarity=lacunarity) + 1) ** 2
+                                          lacunarity=lacunarity) + 1)
         
-        plt.imshow(self.grid[:, :, 0], cmap='gray')
-        plt.colorbar()
-        plt.show()
+        # plt.imshow(self.grid[:, :, 0], cmap='gray')
+        # plt.colorbar()
+        # plt.show()
 
     def setStart(self, x, y):
         if self.start != None:
@@ -93,6 +90,8 @@ class grid:
         return self.grid[coords[0], coords[1], 0]
 
     def getNeighbors(self, coords):
+        if coords == None:
+            return []
         x, y = coords
         neighbors = []
         if x > 0 and self.grid[x-1, y, 0] > 0:

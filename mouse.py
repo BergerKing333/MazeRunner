@@ -10,21 +10,21 @@ class mouse:
 
     def start(self, pathType="A_star"):
         startTime = time.time()
-        if pathType == "A_star":
-            path = self.A_star()
-        elif pathType == "breadth_first":
-            path = self.breadth_first_search()
-        elif pathType == "depth_first":
-            path = self.depth_first_search()
-        elif pathType == "costmapAstar":
-            path = self.costmapAstar()
-        elif pathType == "costmapAstar2":
-            path = self.costmapAstar2()
+        
+        if pathType == "basicAddition":
+            path, visited = self.basicAddition()
+        elif pathType == "noCostImplementation":
+            path, visited = self.noCostImplementation()
+        elif pathType == "multiplication":
+            path, visited = self.multiplication()
+        elif pathType == "exponent":
+            path, visited = self.exponent()
         if path == None:
             print("No path found")
-            return None
-        print(f"Time to calculate path: {round(time.time() - startTime, 5)} seconds")
-        return path
+            return None, None, None, None, None
+        # print(f"Time to calculate path: {round(time.time() - startTime, 5)} seconds")
+        # path length, average cost, max cost, squares checked, time to calculate path
+        return len(path), self.getAveragePathCost(path), self.getMaxPathCost(path), len(visited), round(time.time() - startTime, 5)
 
     def reconstruct_path(self, cameFrom, current):
         total_path = [current]
@@ -33,7 +33,19 @@ class mouse:
             total_path.prepend(current)
         return total_path
     
-    def costmapAstar(self):
+    def getAveragePathCost(self, path):
+        total = 0
+        for node in path:
+            total += self.grid.getCost(node)
+        return total / len(path)
+    
+    def getMaxPathCost(self, path):
+        maxCost = 0
+        for node in path:
+            maxCost = max(maxCost, self.grid.getCost(node))
+        return maxCost
+    
+    def noCostImplementation(self):
         start = self.grid.start
         openSet = []
         heappush(openSet, (0, start))
@@ -44,28 +56,25 @@ class mouse:
         visited = []
         while openSet:
             current_cost, current_node = heappop(openSet)
-            if self.animate:
-                visited.append(current_node)
-                # self.drawVisited(visited)
-                # self.grid.drawAll()
+            visited.append(current_node)
             if current_node == self.grid.end:
                 path = []
                 while current_node:
                     path.append(current_node)
                     current_node = cameFrom[current_node]
-                print(f"Squares checked: {len(visited)}")
+                # print(f"Squares checked: {len(visited)}")
+                # print(f"Path length: {len(path)}")
                 return path[::-1], visited
-        
             for neighbor, score in self.grid.getNeighbors(current_node):
                 tentative_g_score = g_score[current_node] + score
                 if neighbor not in g_score or tentative_g_score < g_score[neighbor]:
                     g_score[neighbor] = tentative_g_score
-                    f_score = (tentative_g_score + self.grid.getHeuristic(neighbor) / 10) * (25 * (2 - self.grid.getCost(neighbor)))
+                    f_score = tentative_g_score + self.grid.getHeuristic(neighbor)
                     heappush(openSet, (f_score, neighbor))
                     cameFrom[neighbor] = current_node
         return None, visited
     
-    def costmapAstar2(self):
+    def basicAddition(self):
         start = self.grid.start
         openSet = []
         heappush(openSet, (0, start))
@@ -76,23 +85,77 @@ class mouse:
         visited = []
         while openSet:
             current_cost, current_node = heappop(openSet)
-            if self.animate:
-                visited.append(current_node)
-                # self.drawVisited(visited)
-                # self.grid.drawAll()
+            visited.append(current_node)
             if current_node == self.grid.end:
                 path = []
                 while current_node:
                     path.append(current_node)
                     current_node = cameFrom[current_node]
-                print(f"Squares checked: {len(visited)}")
+                # print(f"Squares checked: {len(visited)}")
+                # print(f"Path length: {len(path)}")
                 return path[::-1], visited
         
             for neighbor, score in self.grid.getNeighbors(current_node):
                 tentative_g_score = g_score[current_node] + score
                 if neighbor not in g_score or tentative_g_score < g_score[neighbor]:
                     g_score[neighbor] = tentative_g_score
-                    f_score = (tentative_g_score + self.grid.getHeuristic(neighbor) / 10) + (1000 * (2 - self.grid.getCost(neighbor)))
+                    f_score = tentative_g_score + self.grid.getHeuristic(neighbor) + (1 / (self.grid.getCost(neighbor) + 1))
+                    heappush(openSet, (f_score, neighbor))
+                    cameFrom[neighbor] = current_node
+        return None, visited
+    
+    def multiplication(self):
+        start = self.grid.start
+        openSet = []
+        heappush(openSet, (0, start))
+
+        cameFrom = {}
+        cameFrom[start] = None
+        g_score = {start: 0}
+        visited = []
+        while openSet:
+            current_cost, current_node = heappop(openSet)      
+            visited.append(current_node)
+            if current_node == self.grid.end:
+                path = []
+                while current_node:
+                    path.append(current_node)
+                    current_node = cameFrom[current_node]
+                return path[::-1], visited
+        
+            for neighbor, score in self.grid.getNeighbors(current_node):
+                tentative_g_score = g_score[current_node] + score
+                if neighbor not in g_score or tentative_g_score < g_score[neighbor]:
+                    g_score[neighbor] = tentative_g_score
+                    f_score = (tentative_g_score + self.grid.getHeuristic(neighbor)) * ((2 - self.grid.getCost(neighbor)))
+                    heappush(openSet, (f_score, neighbor))
+                    cameFrom[neighbor] = current_node
+        return None, visited
+    
+    def exponent(self):
+        start = self.grid.start
+        openSet = []
+        heappush(openSet, (0, start))
+
+        cameFrom = {}
+        cameFrom[start] = None
+        g_score = {start: 0}
+        visited = []
+        while openSet:
+            current_cost, current_node = heappop(openSet)
+            visited.append(current_node)
+            if current_node == self.grid.end:
+                path = []
+                while current_node:
+                    path.append(current_node)
+                    current_node = cameFrom[current_node]
+                return path[::-1], visited
+        
+            for neighbor, score in self.grid.getNeighbors(current_node):
+                tentative_g_score = g_score[current_node] + score
+                if neighbor not in g_score or tentative_g_score < g_score[neighbor]:
+                    g_score[neighbor] = tentative_g_score
+                    f_score = (tentative_g_score + self.grid.getHeuristic(neighbor)) ** (2 - self.grid.getCost(neighbor))
                     heappush(openSet, (f_score, neighbor))
                     cameFrom[neighbor] = current_node
         return None, visited

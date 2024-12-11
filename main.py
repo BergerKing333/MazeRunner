@@ -4,15 +4,15 @@ from grid import grid
 from mouse import mouse
 
 
-class main:
+class main():
     pygame.init()
     clock = pygame.time.Clock()
-    screen = pygame.display.set_mode((1200, 1200))
+    screen = pygame.display.set_mode((1300, 1300))
     pygame.display.set_caption("Maze Runner")
 
     running = True
 
-    grid = grid(600, 600, screen.get_size())
+    grid = grid(1300, 1300, screen.get_size(), seed_x=np.random.randint(0, 1000), seed_y=np.random.randint(0, 1000))
 
     mouse = mouse(grid, animate=True)
     path = []
@@ -35,7 +35,7 @@ class main:
                     x, y = pygame.mouse.get_pos()
                     grid.setEnd(x, y)
                     if grid.start != None:
-                        path, visited = mouse.start(pathType="costmapAstar2")
+                        path, visited = mouse.start(pathType="costmapAstar")
                         # mouse.drawVisited(visited)
                         mouse.drawPath(path)
                     # path = mouse.start()
@@ -48,3 +48,9 @@ class main:
         pygame.display.flip()
 
         clock.tick(60)
+
+
+
+
+if __name__ == "__main__":
+    main()
